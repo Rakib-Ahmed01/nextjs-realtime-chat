@@ -11,10 +11,9 @@ const Login: FC<LoginProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginWithGoogle = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       await signIn('google');
-      toast.success('Logged in with Google');
     } catch (error) {
       // show error
       console.log(error);

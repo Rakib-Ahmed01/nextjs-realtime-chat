@@ -3,6 +3,12 @@ import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { db } from './db';
 
+/**
+ * Retrieves the Google credentials required for authentication.
+ *
+ * @return {Object} An object containing the client ID and client secret.
+ * @throws {Error} If the GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing.
+ */
 const getGoogleCredentials = () => {
   const clientID = process.env.GOOGLE_CLIENT_ID as string;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET as string;
@@ -30,8 +36,6 @@ export const authOptions: NextAuthOptions = {
     jwt: async ({ token, user }) => {
       const dbuser = (await db.get(`user:${token.id}`)) as User | null;
 
-      console.log({ token, user });
-
       if (!dbuser) {
         token.id = user?.id;
         return token;
@@ -45,7 +49,6 @@ export const authOptions: NextAuthOptions = {
       };
     },
     session: async ({ session, token }) => {
-      console.log({ session, token });
       if (token) {
         session.user.id = token.id;
         session.user.name = token.name;
@@ -55,8 +58,7 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    redirect: ({ url, baseUrl }) => {
-      console.log({ url, baseUrl });
+    redirect: () => {
       return '/dashboard';
     },
   },

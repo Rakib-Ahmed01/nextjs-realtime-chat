@@ -34,13 +34,15 @@ const AddFriendButton = () => {
     } catch (error) {
       setShowSuccessState(false);
       if (error instanceof z.ZodError) {
-        toast.error(error.message);
+        setError('email', {
+          message: error.issues[0].message,
+        });
         return;
       }
 
       if (error instanceof AxiosError) {
         setError('email', {
-          message: 'There was an error sending friend request. Try again',
+          message: error.response?.data,
         });
         return;
       }

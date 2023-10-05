@@ -1,3 +1,7 @@
-import { Redis } from '@upstash/redis';
+// import { Redis } from '@upstash/redis';
 
-export const db = Redis.fromEnv();
+// export const db = Redis.fromEnv();
+
+import Redis from 'ioredis';
+
+export const db = new Redis();

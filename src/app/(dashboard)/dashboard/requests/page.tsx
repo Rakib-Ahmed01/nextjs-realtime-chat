@@ -1,6 +1,7 @@
 import FriendRequest from '@/components/FriendRequests';
-import { fetchFromRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { parseJSON } from '@/lib/parseJSON';
 import { getServerSession } from 'next-auth';
 import { notFound } from 'next/navigation';
 import { FC } from 'react';
@@ -15,21 +16,20 @@ const Requests: FC<RequestsProps> = async () => {
   }
 
   // ids of the user's friend requests
-  const friendRequestIds = (await fetchFromRedis(
-    'smembers',
+  const friendRequestIds = await db.smembers(
     `user:${session?.user.id}:incoming_friend_requests`
-  )) as string[];
+  );
+
+  console.log(friendRequestIds);
 
   const incomingFriendRequests = await Promise.all(
     friendRequestIds.map(async (senderId) => {
-      const sender = (await fetchFromRedis('get', `user:${senderId}`)) as Pick<
-        User,
-        'email' | 'id'
-      >;
+      const sender = await db.get(`user:${senderId}`);
+      const parsedSender = parseJSON(sender);
 
       return {
         senderId,
-        senderEmail: sender.email,
+        senderEmail: parsedSender.email,
       };
     })
   );

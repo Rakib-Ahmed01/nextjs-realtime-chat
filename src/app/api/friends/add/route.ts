@@ -1,4 +1,3 @@
-import { fetchFromRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { addFriendValidator } from '@/lib/validations/add-friend';
@@ -20,10 +19,7 @@ export async function POST(req: Request) {
       email: body.email,
     });
 
-    const userIdToAdd = await fetchFromRedis(
-      'get',
-      `user:email:${validatedEmail}`
-    );
+    const userIdToAdd = await db.get(`user:email:${validatedEmail}`);
 
     if (!userIdToAdd) {
       return new Response('User not found', {
@@ -37,8 +33,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const isAlreadyFriend = await fetchFromRedis(
-      'sismember',
+    const isAlreadyFriend = await db.sismember(
       `user:${session.user.id}:friends`,
       userIdToAdd
     );
@@ -49,8 +44,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const isFriendRequestAlreadySent = await fetchFromRedis(
-      'sismember',
+    const isFriendRequestAlreadySent = await db.sismember(
       `user:${userIdToAdd}:incoming_friend_requests`,
       session.user.id
     );
@@ -61,8 +55,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const isFriendRequestAlreadyRecieved = await fetchFromRedis(
-      'sismember',
+    const isFriendRequestAlreadyRecieved = await db.sismember(
       `user:${session.user.id}:incoming_friend_requests`,
       userIdToAdd
     );
@@ -89,7 +82,7 @@ export async function POST(req: Request) {
       });
     }
 
-    new Response('Something went wrong', {
+    new Response('There was an error sending the friend request', {
       status: 500,
     });
   }

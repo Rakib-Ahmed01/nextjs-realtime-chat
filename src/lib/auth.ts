@@ -2,13 +2,8 @@ import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import RedisAdapter from './databaseAdapter';
 import { db } from './db';
+import { parseJSON } from './parseJSON';
 
-/**
- * Retrieves the Google credentials required for authentication.
- *
- * @return {Object} An object containing the client ID and client secret.
- * @throws {Error} If the GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing.
- */
 const getGoogleCredentials = () => {
   const clientID = process.env.GOOGLE_CLIENT_ID as string;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET as string;
@@ -35,7 +30,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       const dbuser = await db.get(`user:${token.id}`);
-      const parsedDBUser = JSON.parse(dbuser as string) as User | null;
+      const parsedDBUser = parseJSON(dbuser) as User | null;
 
       if (!parsedDBUser) {
         token.id = user?.id;

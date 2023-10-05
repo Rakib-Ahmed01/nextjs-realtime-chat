@@ -12,6 +12,8 @@ const FriendRequest: FC<FriendRequestProps> = ({ incomingFriendRequests }) => {
     incomingFriendRequests
   );
 
+  console.log({ friendRequests });
+
   return (
     <>
       {friendRequests.length === 0 ? (

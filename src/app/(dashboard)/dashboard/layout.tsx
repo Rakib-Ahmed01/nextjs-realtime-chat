@@ -1,8 +1,8 @@
 import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOptions';
 import { Icon, Icons } from '@/components/Icons';
 import SignOutButton from '@/components/SignOutButton';
-import { fetchFromRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth';
+import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,11 +30,9 @@ const SidebarOptions: SidebarOption[] = [
 
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
+
   const unseenRequestCount = (
-    (await fetchFromRedis(
-      'smembers',
-      `user:${session?.user.id}:incoming_friend_requests`
-    )) as string[]
+    await db.smembers(`user:${session?.user.id}:incoming_friend_requests`)
   ).length;
 
   if (!session) {

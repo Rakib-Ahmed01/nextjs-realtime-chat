@@ -12,7 +12,6 @@ import Button from './ui/Button';
 type FormData = z.infer<typeof addFriendValidator>;
 
 const AddFriendButton = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showSuccessState, setShowSuccessState] = useState<boolean>(false);
 
   const {
@@ -25,8 +24,6 @@ const AddFriendButton = () => {
   });
 
   const addFriend = async (email: string) => {
-    setIsLoading(true);
-
     try {
       const { email: validatedEmail } = addFriendValidator.parse({ email });
       await axios.post('/api/friends/add', { email: validatedEmail });
@@ -48,8 +45,6 @@ const AddFriendButton = () => {
       }
 
       toast.error('Failed to add friend');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -73,7 +68,7 @@ const AddFriendButton = () => {
           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="you@example.com"
         />
-        <Button isLoading={isLoading}>Add</Button>
+        <Button>Add</Button>
       </div>
       {errors.email ? (
         <p className="mt-1 text-sm text-red-600">{errors.email?.message}</p>

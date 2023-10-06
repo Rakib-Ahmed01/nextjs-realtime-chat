@@ -31,13 +31,12 @@ const SidebarOptions: SidebarOption[] = [
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
 
-  const unseenRequestCount = (
-    await db.smembers(`user:${session?.user.id}:incoming_friend_requests`)
-  ).length;
-
   if (!session) {
     return notFound();
   }
+  const unseenRequestCount = (
+    await db.smembers(`user:${session.user.id}:incoming_friend_requests`)
+  ).length;
 
   return (
     <div className="flex w-full h-screen gap-5">

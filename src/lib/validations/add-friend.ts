@@ -10,3 +10,4 @@ export const addFriendValidator = z.object({
       message: 'Invalid email',
     }),
 });
+

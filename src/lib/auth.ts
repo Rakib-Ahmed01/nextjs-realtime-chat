@@ -19,6 +19,7 @@ const getGoogleCredentials = () => {
   return { clientID, clientSecret };
 };
 
+
 export const authOptions: NextAuthOptions = {
   adapter: RedisAdapter(db),
   providers: [

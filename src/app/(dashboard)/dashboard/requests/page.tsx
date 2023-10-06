@@ -20,8 +20,6 @@ const Requests: FC<RequestsProps> = async () => {
     `user:${session?.user.id}:incoming_friend_requests`
   );
 
-  console.log(friendRequestIds);
-
   const incomingFriendRequests = await Promise.all(
     friendRequestIds.map(async (senderId) => {
       const sender = await db.get(`user:${senderId}`);
@@ -29,7 +27,7 @@ const Requests: FC<RequestsProps> = async () => {
 
       return {
         senderId,
-        senderEmail: parsedSender.email,
+        senderEmail: parsedSender.email as string,
       };
     })
   );

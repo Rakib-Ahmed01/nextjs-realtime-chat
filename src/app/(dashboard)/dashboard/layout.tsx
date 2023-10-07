@@ -1,6 +1,8 @@
 import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOptions';
 import { Icon, Icons } from '@/components/Icons';
+import SidebarChatList from '@/components/SidebarChatList';
 import SignOutButton from '@/components/SignOutButton';
+import { getFriendsByUserId } from '@/helpers/getFriendsByUserId';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -34,9 +36,12 @@ export default async function Layout({ children }: LayoutProps) {
   if (!session) {
     return notFound();
   }
+
   const unseenRequestCount = (
     await db.smembers(`user:${session.user.id}:incoming_friend_requests`)
   ).length;
+
+  const friends = await getFriendsByUserId(session.user.id);
 
   return (
     <div className="flex w-full h-screen gap-5">
@@ -45,12 +50,16 @@ export default async function Layout({ children }: LayoutProps) {
           <Icons.Logo className="h-8 w-auto text-indigo-600 -rotate-[30deg]" />
           <h2 className="text-xl font-semibold ml-2 text-indigo-600">Chat</h2>
         </Link>
-        <div className="text-xs font-semibold leading-6 text-gray-400">
-          Your chats
-        </div>
+        {friends.length > 0 ? (
+          <div className="text-xs font-semibold leading-6 text-gray-400">
+            Your chats
+          </div>
+        ) : null}
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
-            <li>chats</li>
+            <li>
+              <SidebarChatList friends={friends} sessionId={session.user.id} />
+            </li>
             <li>
               <div className="text-xs font-semibold leading-6 text-gray-400">
                 Overview
@@ -72,13 +81,12 @@ export default async function Layout({ children }: LayoutProps) {
                     </li>
                   );
                 })}
+                <li>
+                  <FriendRequestSidebarOptions
+                    initialRequestCount={unseenRequestCount}
+                  />
+                </li>
               </ul>
-            </li>
-
-            <li>
-              <FriendRequestSidebarOptions
-                initialRequestCount={unseenRequestCount}
-              />
             </li>
 
             <li className="-mx-6 mt-auto flex items-center">

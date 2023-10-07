@@ -1,1 +1,2 @@
-export const parseJSON = (data: string | null) => JSON.parse(data as string);
+export const parseJSON = <T>(data: string | string[] | null): T =>
+  JSON.parse(data as string);

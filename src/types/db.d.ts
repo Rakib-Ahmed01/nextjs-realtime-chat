@@ -4,3 +4,16 @@ interface User {
   email: string;
   image: string;
 }
+
+interface Chat {
+  id: string;
+  messages: Message[];
+}
+
+interface Message {
+  id: string;
+  text: string;
+  senderId: string;
+  recieverId: string;
+  timestamp: number;
+}
